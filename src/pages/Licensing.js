@@ -53,7 +53,7 @@ function Licensing() {
             <li>🎭 Create a custom character for your brand</li>
             <li>🗣️ Give it a unique voice and personality</li>
             <li>💼 Populate it with your business information</li>
-            <li>📈 Let Glimpse handle your marketing at a fraction of the cost</li>
+            <li>📈 Let Interactive avatars handle your marketing at a fraction of the cost</li>
           </ul>
           <a 
             href="https://calendly.com/michael-glimpse/30min" 
