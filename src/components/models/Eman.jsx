@@ -1,7 +1,7 @@
 import { useGLTF, useAnimations } from '@react-three/drei';
 import React, { useEffect, useRef, useState } from 'react';
-import { useRPMLipsync } from '../../hooks/userpmlipsync';
-import { useHeadTracking } from '../../hooks/useheadtracking';
+import { useRPMLipsync } from '../../hooks/useRPMLipsync';
+import { useHeadTracking } from '../../hooks/useHeadTracking';
 
 export function Eman(props) {
   const { nodes, materials, scene } = useGLTF('/models/EmanPulisRPM.glb');

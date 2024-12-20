@@ -4,7 +4,7 @@ import { KeyboardControls, Loader } from '@react-three/drei';
 import { Experience } from './Experience';
 import ChatBubblev1 from '../chat/ChatBubblev1';
 import ResetButton from '../chat/Chat';
-import { useConvaiClient } from '../hooks/useConvaiclient';
+import { useConvaiClient } from '../hooks/useconvaiclient';
 
 export function ConvaiHolder({ apiKey, characterId, character = 'eman' }) {
   const { client } = useConvaiClient(characterId, apiKey);
