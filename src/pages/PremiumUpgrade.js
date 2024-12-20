@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useAuth } from '../context/AuthContext';
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -132,6 +133,8 @@ const Disclaimer = styled.p`
 `;
 
 function PremiumUpgrade() {
+  const { user } = useAuth();
+  
   const tiers = [
     {
       name: "Free",
@@ -148,10 +151,11 @@ function PremiumUpgrade() {
     },
     {
       name: "Business",
-      price: "1,499",
+      price: "1,250",
+      pricePerInteraction: "0.42USD",
       featured: true,
       features: [
-        "2500 total interactions",
+        "3000 total interactions",
         "Interactive avatar, with picture resemblance",
         "Monthly user interaction data",
         "Enhanced profile customization",
@@ -166,6 +170,7 @@ function PremiumUpgrade() {
     {
       name: "Pro",
       price: "2,999",
+      pricePerInteraction: "0.33USD",
       features: [
         "5000 total interactions",
         "Business QR code",
@@ -176,13 +181,14 @@ function PremiumUpgrade() {
         "Free Website integration options"
       ],
       buttonText: "Upgrade to Pro",
-      stripeLink: "https://buy.stripe.com/dR62a56SacM6g4U003",
+      stripeLink: "https://buy.stripe.com/aEUg0V7WebI2cSI4gk",
       hasGuarantee: true
     }
   ];
 
-  const handleSubscribe = (stripeLink) => {
-    window.location.href = stripeLink;
+  const handleSubscribe = async (stripeLink) => {
+    const urlWithEmail = `${stripeLink}?prefilled_email=${encodeURIComponent(user.email)}`;
+    window.location.href = urlWithEmail;
   };
 
   return (

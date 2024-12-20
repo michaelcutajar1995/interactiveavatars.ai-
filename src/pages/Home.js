@@ -868,7 +868,7 @@ function Home() {
                 Bring your brand to life for free.
               </ActionButton>
               <ActionButton className="secondary" onClick={() => window.location.href='https://calendly.com/michael-glimpse/30min?month=2024-12'}>
-                Let's talk.
+                Book a meeting
               </ActionButton>
             </ButtonGroup>
           </LeftSection>
@@ -891,7 +891,7 @@ function Home() {
             />
         <ClientLogoSection />
 
-
+        <ComparisonTable />
        
         
       </HomeContainer>

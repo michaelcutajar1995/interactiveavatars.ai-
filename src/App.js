@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import styled from 'styled-components';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
@@ -23,6 +24,7 @@ import ContactForm from './components/ContactForm';
 import PremiumUpgrade from './pages/PremiumUpgrade';
 import Mans from './pages/Mans';
 import Social from './pages/Social';
+import { AuthProvider } from './context/AuthContext';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -39,30 +41,32 @@ function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <AppContainer>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/team" element={<Team />} />
-          <Route path="/careers" element={<Careers />} />
-          <Route path="/blog" element={<BlogIndex />} />
-          <Route path="/blog/:slug" element={<BlogPost blogPosts={blogPosts} />} />
-          <Route path="/podcast" element={<Podcast />} />
-          <Route path="/ourwork" element={<OurWork />} />
-          <Route path="/ourwork/mans" element={<Mans />} />
-          <Route path="/ourwork/remax" element={<Remax />} />
-          <Route path="/products/travel" element={<GlimpseTravel />} />
-          <Route path="/products/social" element={<GlimpseSocial />} />
-          <Route path="/products/business" element={<GlimpseBusiness />} />
-          <Route path="/tokenwaitlist" element={<TokenWaitlist />} />
-          <Route path="/contactform" element={<ContactForm />} />
-          <Route path="/premiumupgrade" element={<PremiumUpgrade />} />
-          <Route path="/social" element={<Social />} />
-        </Routes>
-        <ToastContainer />
-      </AppContainer>
-    </BrowserRouter>
+    <AuthProvider>
+      <Router>
+        <AppContainer>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/team" element={<Team />} />
+            <Route path="/careers" element={<Careers />} />
+            <Route path="/blog" element={<BlogIndex />} />
+            <Route path="/blog/:slug" element={<BlogPost blogPosts={blogPosts} />} />
+            <Route path="/podcast" element={<Podcast />} />
+            <Route path="/ourwork" element={<OurWork />} />
+            <Route path="/ourwork/mans" element={<Mans />} />
+            <Route path="/ourwork/remax" element={<Remax />} />
+            <Route path="/products/travel" element={<GlimpseTravel />} />
+            <Route path="/products/social" element={<GlimpseSocial />} />
+            <Route path="/products/business" element={<GlimpseBusiness />} />
+            <Route path="/tokenwaitlist" element={<TokenWaitlist />} />
+            <Route path="/contactform" element={<ContactForm />} />
+            <Route path="/premiumupgrade" element={<PremiumUpgrade />} />
+            <Route path="/social" element={<Social />} />
+          </Routes>
+          <ToastContainer />
+        </AppContainer>
+      </Router>
+    </AuthProvider>
   );
 }
 

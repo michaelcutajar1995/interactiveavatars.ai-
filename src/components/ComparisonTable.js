@@ -56,6 +56,30 @@ const PriceCard = styled.div`
   }
 `;
 
+const Title = styled.h2`
+  text-align: center;
+  color: #FFFFFF;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+`;
+
+const UpgradeButton = styled.button`
+  display: block;
+  margin: 2rem auto;
+  padding: 1rem 2rem;
+  background: #FFFFFF;
+  color: #000000;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
 function ComparisonTable() {
   const glimpseFeatures = [
     "Two-way  engagement",
@@ -64,7 +88,7 @@ function ComparisonTable() {
     "Gamified rewards increase recall",
     "Real-time data insights",
     "Data and conversations stored",
-    "Reusable avatars"
+   
   ];
 
   const traditionalFeatures = [
@@ -79,10 +103,11 @@ function ComparisonTable() {
 
   return (
     <TableContainer>
+      <Title>Why We're Better</Title>
       <Table>
         <PriceCard isGlimpse={true}>
-          <h3>Glimpse Interactive Characters</h3>
-          <div className="price">$200/month</div>
+          <h3>Interactive Avatars</h3>
+          <div className="price">0.60USD per customer interaction</div>
           <div className="features">
             {glimpseFeatures.map((feature, index) => (
               <div key={index} className="feature-item">
@@ -104,6 +129,9 @@ function ComparisonTable() {
           </div>
         </PriceCard>
       </Table>
+      <UpgradeButton onClick={() => window.location.href = '/premiumupgrade'}>
+        See Pricing
+      </UpgradeButton>
     </TableContainer>
   );
 }
