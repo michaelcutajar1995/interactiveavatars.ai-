@@ -1,0 +1,41 @@
+import { Canvas } from '@react-three/fiber';
+import { Experience } from '/Users/michaelcutajar/Downloads/glimpsewebsite-main/src/components/Experience.jsx';
+import { KeyboardControls, Loader } from '@react-three/drei';
+import { useConvaiClient } from '/Users/michaelcutajar/Downloads/glimpsewebsite-main/src/hooks/convaihooks/useConvaiClient.jsx';
+import ChatBubble from '/Users/michaelcutajar/Downloads/glimpsewebsite-main/src/chat/Chat.jsx';
+
+function ConvaiApp() {
+  const { client } = useConvaiClient(
+    'ac9fe68e-4d7d-11ef-ab28-42010a7be011',
+    '4cd14f36757cce3a936054613761cb0b'
+  );
+
+  return (
+    <>
+      <KeyboardControls
+        map={[
+          { name: 'forward', keys: ['ArrowUp', 'w', 'W'] },
+          { name: 'backward', keys: ['ArrowDown', 's', 'S'] },
+          { name: 'left', keys: ['ArrowLeft', 'a', 'A'] },
+          { name: 'right', keys: ['ArrowRight', 'd', 'D'] },
+          { name: 'sprint', keys: ['Shift'] },
+          { name: 'jump', keys: ['Space'] },
+        ]}
+      >
+        <Loader />
+        <Canvas
+          shadows
+          camera={{
+            position: [0, 0.8, 3],
+            fov: 75,
+          }}
+        >
+          <Experience client={client} />
+        </Canvas>
+        <ChatBubble client={client} />
+      </KeyboardControls>
+    </>
+  );
+}
+
+export default ConvaiApp;

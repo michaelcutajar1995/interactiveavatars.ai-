@@ -1,0 +1,36 @@
+.try-me-arrow {
+  position: absolute;
+  top: 50px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: yellow;
+  font-weight: bold;
+  z-index: 1000;
+  animation: bounce 2s infinite;
+  transform: rotate(-90deg);
+  white-space: nowrap;
+  padding: 8px;
+  user-select: none;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.try-me-arrow svg {
+  min-width: 24px;
+  height: auto;
+  @media (max-width: 768px) {
+    min-width: 28px;
+  }
+} 
