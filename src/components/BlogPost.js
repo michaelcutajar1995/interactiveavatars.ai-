@@ -1,7 +1,8 @@
+
 import React from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { blogContent } from '../data/blogContent.mjs';
+import { blogContent } from '../blogdata/blogContent.mjs';
 
 const BlogContainer = styled.div`
   width: 100%;

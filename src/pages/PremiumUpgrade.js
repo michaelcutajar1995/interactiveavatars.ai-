@@ -145,6 +145,7 @@ function PremiumUpgrade() {
     {
       name: "Free",
       price: "0",
+      tokenPrice: "0 $AIP",
       features: [
         "A maximum of 50 interactions",
         "Personal avatar link",
@@ -153,11 +154,12 @@ function PremiumUpgrade() {
         "Default voice",
       ],
       buttonText: "Get Started",
-      stripeLink: "/contactform"
+      action: "/contactform"
     },
     {
       name: "Business",
       price: "1,249",
+      tokenPrice: "12,490 $AIP",
       featured: true,
       features: [
         "3000 total interactions",
@@ -166,26 +168,30 @@ function PremiumUpgrade() {
         "Enhanced profile customization",
         "Priority support",
         "Custom voice creation",
-        "Website integration options"
+        "Website integration options",
+        "Stake 5,000 $AIP for 20% interaction discount",
+        "Governance voting rights"
       ],
-      buttonText: "Upgrade to Business",
-      stripeLink: "https://buy.stripe.com/3cs5mh6Sa5jE8CsbIK",
+      buttonText: "Buy with $AIP",
       hasGuarantee: true
     },
     {
       name: "Pro",
       price: "2,999",
+      tokenPrice: "29,990 $AIP",
       features: [
         "5000 total interactions",
         "Business QR code",
         "Monthly user interaction data",
-        "Professional 3D modeling work for extra detail.",
+        "Professional 3D modeling work",
         "Custom voice creation",
         "Premium support",
-        "Free Website integration options"
+        "Free Website integration",
+        "Stake 15,000 $AIP for 30% interaction discount",
+        "Priority governance voting",
+        "Revenue sharing from platform fees"
       ],
-      buttonText: "Upgrade to Pro",
-      stripeLink: "https://buy.stripe.com/aEUg0V7WebI2cSI4gk",
+      buttonText: "Buy with $AIP",
       hasGuarantee: true
     }
   ];

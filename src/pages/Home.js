@@ -11,11 +11,12 @@ import ComparisonTable from '../components/ComparisonTable';
 import ContactForm from '../components/ContactForm';
 import { ClientLogoSection } from '../pages/Team';
 import { ConvaiHolder } from '../components/ConvaiHolder';
-import { words, ideas, userNames, useNotifications } from '../config/wordLists';
+import { words, ideas, userNames, useNotifications } from '../components/wordLists';
 import UserFlow from '../pages/userflow';
 import FAQ from '../pages/FAQ';
 import { Link } from 'react-router-dom'
 import Social from '../pages/Social';
+import TokenInfo from '../pages/TokenInfo';
 
 
 const PromoBanner = styled.div`
@@ -870,6 +871,10 @@ function Home() {
               </ActionButton>
               <ActionButton className="secondary" onClick={() => window.location.href='https://calendly.com/michael-glimpse/30min?month=2024-12'}>
                 Book a meeting
+              </ActionButton>
+              
+              <ActionButton className="secondary" onClick={() => window.location.href='/token'}>
+                Learn about $AIP
               </ActionButton>
             </ButtonGroup>
           </LeftSection>

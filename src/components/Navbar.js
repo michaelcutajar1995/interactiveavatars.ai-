@@ -5,7 +5,7 @@ import logo from '../assets/output-onlinepngtools.png';
 
 const NavbarContainer = styled.nav`
   position: fixed;
-  top: 0;
+  top: 25px;
   left: 0;
   right: 0;
   display: flex;
@@ -223,10 +223,12 @@ function Navbar() {
             <DropdownLink to="/ourwork/remax" style={{ paddingLeft: '2rem' }}>→ Remax Demo</DropdownLink>
             <DropdownLink to="/products/travel">Glimpse Travel</DropdownLink>
             <DropdownLink to="/products/social">Glimpse Social</DropdownLink>
+            <NavLink to="/token">$AIP Token</NavLink>
           </DropdownContent>
         </MoreDropdown>
         <HighlightedNavLink to="/contactform">Bring Your Brand to Life for free.</HighlightedNavLink>
         <HighlightedNavLink to="/premiumupgrade">Pricing</HighlightedNavLink>
+        <HighlightedNavLink to="/premiumupgrade">Whitepaper</HighlightedNavLink>
       </DesktopMenu>
       {/* Mobile Menu */}
       <MobileMenu>
@@ -246,6 +248,7 @@ function Navbar() {
               <NavLink to="/ourwork/remax" onClick={handleLinkClick} style={{ paddingLeft: '2rem' }}>→ Remax Demo</NavLink>
               <NavLink to="/products/travel" onClick={handleLinkClick}>Glimpse Travel</NavLink>
               <NavLink to="/products/social" onClick={handleLinkClick}>Glimpse Social</NavLink>
+              <NavLink to="/token" onClick={handleLinkClick}>$AIP Token</NavLink>
             </MobileDropdownContent>
           </MobileProductDropdown>
           <HighlightedNavLink to="/contactform" onClick={handleLinkClick}>
@@ -253,6 +256,9 @@ function Navbar() {
           </HighlightedNavLink>
           <HighlightedNavLink to="/premiumupgrade" onClick={handleLinkClick}>
             Pricing
+          </HighlightedNavLink>
+          <HighlightedNavLink to="/premiumupgrade" onClick={handleLinkClick}>
+            Whitepaper
           </HighlightedNavLink>
         </MobileMenuItems>
       </MobileMenu>
