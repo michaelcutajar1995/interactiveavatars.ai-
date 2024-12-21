@@ -135,8 +135,8 @@ span:nth-of-type(3) {
 
 
 .convai-holder {
-  margin: 0 auto;
   position: relative;
+  touch-action: manipulation;
 }
 
 .convai-holder canvas {
@@ -153,6 +153,10 @@ span:nth-of-type(3) {
   border-radius: 15px;
   overflow: hidden;
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.canvas-container canvas {
+  touch-action: none;
 }
 
 .npc-message {
@@ -242,7 +246,7 @@ span:nth-of-type(3) {
 .desktop-layout .canvas-container {
   flex: 1;
   height: 100%;
-  right: 50px;
+  right: -320px;
   
 
 }

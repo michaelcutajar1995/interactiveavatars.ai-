@@ -298,6 +298,110 @@ const ErrorMessage = styled.p`
   margin-top: 0.5rem;
 `;
 
+const ProgressBar = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.2);
+    z-index: 0;
+  }
+`;
+
+const Step = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: ${props => props.active ? '#FFD700' : 'rgba(255, 255, 255, 0.1)'};
+  color: ${props => props.active ? '#000' : '#fff'};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
+  
+  &::after {
+    content: '${props => props.label}';
+    position: absolute;
+    top: 45px;
+    white-space: nowrap;
+    color: ${props => props.active ? '#FFD700' : '#fff'};
+    font-size: 0.8rem;
+  }
+`;
+
+const StepContent = styled.div`
+  display: ${props => props.active ? 'block' : 'none'};
+  animation: fadeIn 0.5s ease;
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+`;
+
+const NavigationButtons = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+`;
+
+const NavButton = styled(SubmitButton)`
+  width: 120px;
+  background: ${props => props.back ? 'rgba(255, 255, 255, 0.1)' : '#FFD700'};
+`;
+
+const ValidationMessage = styled.div`
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  padding: 16px 24px;
+  border-radius: 8px;
+  border: 1px solid #FFD700;
+  color: white;
+  font-size: 1rem;
+  z-index: 1000;
+  animation: slideDown 0.3s ease;
+
+  @keyframes slideDown {
+    from { transform: translate(-50%, -100%); }
+    to { transform: translate(-50%, 0); }
+  }
+`;
+
+const OptionGroup = styled.div`
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+`;
+
+const Option = styled.button`
+  padding: 1rem;
+  border-radius: 10px;
+  border: 2px solid ${props => props.selected ? '#FFD700' : 'rgba(255, 255, 255, 0.1)'};
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  cursor: pointer;
+  flex: 1;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+`;
+
 export default function ContactForm() {
   const [state, setState] = useState({
     succeeded: false,
@@ -317,11 +421,23 @@ export default function ContactForm() {
     voiceFile: null,
     selectedImageUrl: null,
     savedImages: [],
+    imageChoice: null,
   });
 
   const RPM_API_KEY = process.env.REACT_APP_RPM_API_KEY;
 
   const [formState, handleFormspreeSubmit] = useForm("xbljeznb");
+
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 3;
+
+  const steps = {
+    1: "Basic Information",
+    2: "Voice Selection",
+    3: "Avatar Creation"
+  };
+
+  const [validationMessage, setValidationMessage] = useState(null);
 
   const handleGenerateVoicePreview = async () => {
     if (!formData.voiceId || !formData.previewText) return;
@@ -413,25 +529,27 @@ export default function ContactForm() {
       const uploadedImageUrls = [];
       let voiceData = null;
       
-      // Upload all images to Cloudinary
-      for (const imageData of formData.savedImages) {
-        const cloudinaryData = new FormData();
-        cloudinaryData.append('file', imageData.file);
-        cloudinaryData.append('upload_preset', 'ml_default');
+      // Upload all images to Cloudinary (if any)
+      if (formData.imageChoice === 'upload' && formData.savedImages.length > 0) {
+        for (const imageData of formData.savedImages) {
+          const cloudinaryData = new FormData();
+          cloudinaryData.append('file', imageData.file);
+          cloudinaryData.append('upload_preset', 'ml_default');
 
-        const cloudinaryResponse = await fetch(
-          `https://api.cloudinary.com/v1_1/dpqlbny40/image/upload`,
-          {
-            method: 'POST',
-            body: cloudinaryData,
-          }
-        );
+          const cloudinaryResponse = await fetch(
+            `https://api.cloudinary.com/v1_1/dpqlbny40/image/upload`,
+            {
+              method: 'POST',
+              body: cloudinaryData,
+            }
+          );
 
-        const imageResponse = await cloudinaryResponse.json();
-        uploadedImageUrls.push(imageResponse.secure_url);
+          const imageResponse = await cloudinaryResponse.json();
+          uploadedImageUrls.push(imageResponse.secure_url);
+        }
       }
 
-      // Upload voice file to Cloudinary if it exists
+      // Handle voice data
       if (formData.voiceFile) {
         const voiceCloudinaryData = new FormData();
         voiceCloudinaryData.append('file', formData.voiceFile);
@@ -459,7 +577,7 @@ export default function ContactForm() {
         };
       }
 
-      // Prepare form data for Formspree
+      // Prepare submission data
       const submissionData = {
         ...formData,
         uploadedImages: uploadedImageUrls,
@@ -469,7 +587,7 @@ export default function ContactForm() {
       // Submit to Formspree
       const result = await handleFormspreeSubmit(submissionData);
       
-      if (result.ok) {
+      if (result.response?.ok) {
         setState({ 
           succeeded: true, 
           submitting: false, 
@@ -489,9 +607,8 @@ export default function ContactForm() {
           voiceFile: null,
           selectedImageUrl: null,
           savedImages: [],
+          imageChoice: null,
         });
-      } else {
-        throw new Error('Form submission failed');
       }
 
     } catch (error) {
@@ -499,7 +616,7 @@ export default function ContactForm() {
       setState({ 
         succeeded: false, 
         submitting: false,
-        errors: ['There was an error saving your character. Please try again.'] 
+        errors: [] // Don't show error message since Formspree will handle it
       });
     }
   };
@@ -518,151 +635,283 @@ export default function ContactForm() {
     window.location.reload();
   };
 
+  const canProceedToNextStep = () => {
+    switch (currentStep) {
+      case 1:
+        const hasRequiredInfo = Boolean(
+          formData.brand_website?.trim() && 
+          formData.email?.trim()
+        );
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isValidEmail = emailRegex.test(formData.email || '');
+        
+        if (!isValidEmail && formData.email?.trim()) {
+          showValidation('Please enter a valid email address');
+          return false;
+        }
+        return hasRequiredInfo;
+      case 2:
+        return Boolean(formData.voiceId || formData.voiceFile);
+      case 3:
+        return true;
+      default:
+        return false;
+    }
+  };
+
+  const showValidation = (message) => {
+    setValidationMessage(message);
+    setTimeout(() => setValidationMessage(null), 3000); // Hide after 3 seconds
+  };
+
   return (
     <FormContainer>
- 
-      
+      {validationMessage && (
+        <ValidationMessage>
+          {validationMessage}
+        </ValidationMessage>
+      )}
+
+      <ProgressBar>
+        {Object.entries(steps).map(([key, label]) => (
+          <Step 
+            key={key} 
+            active={currentStep >= parseInt(key)}
+            label={label}
+          >
+            {key}
+          </Step>
+        ))}
+      </ProgressBar>
+
       <Form onSubmit={handleFormSubmit}>
-        <QuestionGroup>
-          <QuestionLabel>What's your full name? / Brand name?</QuestionLabel>
-          <AnswerInput 
-            type="text"
-            name="brand_website"
-            placeholder="Enter your website URL" 
-            required 
-          />
-        </QuestionGroup>
+        {/* Step 1: Basic Information */}
+        <StepContent active={currentStep === 1}>
+          <QuestionGroup>
+            <QuestionLabel>What's your full name? / Brand name? *</QuestionLabel>
+            <AnswerInput 
+              type="text"
+              name="brand_website"
+              placeholder="Enter your name or brand name" 
+              required 
+              value={formData.brand_website || ''}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                brand_website: e.target.value
+              }))}
+            />
+          </QuestionGroup>
 
-        <QuestionGroup>
-          <QuestionLabel>What's your email address?</QuestionLabel>
-          <AnswerInput 
-            type="email"
-            name="email" 
-            placeholder="Enter your email" 
-            required 
-          />
-        </QuestionGroup>
+          <QuestionGroup>
+            <QuestionLabel>What's your email address? *</QuestionLabel>
+            <AnswerInput 
+              type="email"
+              name="email" 
+              placeholder="Enter your email" 
+              required 
+              value={formData.email || ''}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                email: e.target.value
+              }))}
+            />
+          </QuestionGroup>
 
-        <QuestionGroup>
-          <QuestionLabel>Describe your character (max 1000 words)</QuestionLabel>
-          <TextArea
-            name="character_description"
-            placeholder="Example: We sell real estate in the city of San Francisco. We've been in business for 10 years and have a team of 10 agents."
-            maxLength={5000} // approximately 1000 words
-            required
-          />
-        </QuestionGroup>
+          <QuestionGroup>
+            <QuestionLabel>Describe your character (optional)</QuestionLabel>
+            <TextArea
+              name="character_description"
+              placeholder="Example: We sell real estate in the city of San Francisco. We've been in business for 10 years and have a team of 10 agents."
+              maxLength={5000}
+              value={formData.character_description || ''}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                character_description: e.target.value
+              }))}
+            />
+          </QuestionGroup>
+        </StepContent>
 
-        <VoiceSelectorContainer>
-          
-          <VoiceOptionsContainer>
-            <VoiceOption>
-              <VoiceOptionTitle>Option 1: Upload your own voice (business and pro plan only)</VoiceOptionTitle>
-              <FileInput
-                type="file"
-                id="voiceFile"
-                name="voiceFile"
-                accept="audio/*"
-                onChange={handleVoiceUpload}
-              />
-              <FileLabel htmlFor="voiceFile">Upload Voice File (minimum 1 minute)</FileLabel>
-              {formData.voiceFile && (
-                <p style={{ color: 'white', marginTop: '0s.5rem' }}>
-                  Selected file: {formData.voiceFile.name}
-                </p>
-              )}
-            </VoiceOption>
-
-            <VoiceOption>
-              <VoiceOptionTitle>Option 2: Select from our voice library (free plan))</VoiceOptionTitle>
-              <VoiceSelector onVoiceSelect={handleVoiceSelect} />
-              {formData.voiceId && (
-                <QuestionGroup>
-                  <QuestionLabel>Test the voice</QuestionLabel>
-                  <AnswerInput
-                    type="text"
-                    placeholder="Enter text to preview voice"
-                    value={formData.previewText}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      previewText: e.target.value
-                    }))}
-                  />
-                  <PreviewButton 
-                    type="button"
-                    onClick={handleGenerateVoicePreview}
-                  >
-                    Generate Preview
-                  </PreviewButton>
-                </QuestionGroup>
-              )}
-            </VoiceOption>
-          </VoiceOptionsContainer>
-
-          {formData.voicePreview && (
-            <VoicePreview>
-              <QuestionLabel>Voice Preview</QuestionLabel>
-              <audio controls src={formData.voicePreview} />
-            </VoicePreview>
-          )}
-        </VoiceSelectorContainer>
-
-        <QuestionGroup>
-          <QuestionLabel>Upload a photo of yourself, or we can select a default one based on your information</QuestionLabel>
-          <FileInput 
-            type="file" 
-            accept="image/*" 
-            id="avatarImage" 
-            onChange={handleImageUpload} 
-          />
-          <FileLabel htmlFor="avatarImage">Choose Image</FileLabel>
-        </QuestionGroup>
-
-        {formData.savedImages.length > 0 && (
-          <SavedImagesGrid>
-            {formData.savedImages.map((image, index) => (
-              <SavedImageContainer key={index}>
-                <img 
-                  src={image.url} 
-                  alt={`Uploaded ${index + 1}`} 
+        {/* Step 2: Voice Selection */}
+        <StepContent active={currentStep === 2}>
+          <VoiceSelectorContainer>
+            <VoiceOptionsContainer>
+              <VoiceOption>
+                <VoiceOptionTitle>Option 1: Upload your own voice (business and pro plan only)</VoiceOptionTitle>
+                <FileInput
+                  type="file"
+                  id="voiceFile"
+                  name="voiceFile"
+                  accept="audio/*"
+                  onChange={handleVoiceUpload}
                 />
-                <button onClick={() => handleRemoveImage(index)}>×</button>
-              </SavedImageContainer>
-            ))}
-          </SavedImagesGrid>
-        )}
+                <FileLabel htmlFor="voiceFile">Upload Voice File (minimum 1 minute)</FileLabel>
+                {formData.voiceFile && (
+                  <p style={{ color: 'white', marginTop: '0s.5rem' }}>
+                    Selected file: {formData.voiceFile.name}
+                  </p>
+                )}
+              </VoiceOption>
 
-        <SubmitButton type="submit" disabled={formState.submitting}>
-          {formState.submitting ? "Bare with us...soon there" : "GET MY FREE DEMO"}
-        </SubmitButton>
+              <VoiceOption>
+                <VoiceOptionTitle>Option 2: Select from our voice library (free plan))</VoiceOptionTitle>
+                <VoiceSelector onVoiceSelect={handleVoiceSelect} />
+                {formData.voiceId && (
+                  <QuestionGroup>
+                    <QuestionLabel>Test the voice</QuestionLabel>
+                    <AnswerInput
+                      type="text"
+                      placeholder="Enter text to preview voice"
+                      value={formData.previewText}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        previewText: e.target.value
+                      }))}
+                    />
+                    <PreviewButton 
+                      type="button"
+                      onClick={handleGenerateVoicePreview}
+                    >
+                      Generate Preview
+                    </PreviewButton>
+                  </QuestionGroup>
+                )}
+              </VoiceOption>
+            </VoiceOptionsContainer>
 
-        {state.errors && state.errors.length > 0 && (
-          <ErrorMessage>
-            {state.errors.join(", ")}
-          </ErrorMessage>
-        )}
+            {formData.voicePreview && (
+              <VoicePreview>
+                <QuestionLabel>Voice Preview</QuestionLabel>
+                <audio controls src={formData.voicePreview} />
+              </VoicePreview>
+            )}
+          </VoiceSelectorContainer>
+        </StepContent>
 
-        {formState.errors && formState.errors.length > 0 && (
-          <ErrorMessage>
-            {formState.errors.map(error => error.message).join(", ")}
-          </ErrorMessage>
-        )}
+        {/* Step 3: Avatar Creation */}
+        <StepContent active={currentStep === 3}>
+          <QuestionGroup>
+            <QuestionLabel>Would you like to upload your own photo or let us choose for you?</QuestionLabel>
+            <OptionGroup>
+              <Option 
+                type="button"
+                selected={formData.imageChoice === 'upload'}
+                onClick={() => setFormData(prev => ({ ...prev, imageChoice: 'upload' }))}
+              >
+                Upload My Own Photo
+              </Option>
+              <Option 
+                type="button"
+                selected={formData.imageChoice === 'auto'}
+                onClick={() => setFormData(prev => ({ 
+                  ...prev, 
+                  imageChoice: 'auto',
+                  savedImages: [], // Clear any uploaded images
+                  avatarImage: null,
+                  selectedImageUrl: null
+                }))}
+              >
+                Let Interactive Avatars Choose For Me
+              </Option>
+            </OptionGroup>
+          </QuestionGroup>
 
-        {(state.succeeded || formState.succeeded) && (
-          <SuccessPopup>
-            <SuccessIcon>✓</SuccessIcon>
-            <SuccessTitle>Thank you for your submission!</SuccessTitle>
-            <SuccessMessage>
-              We've received your character preferences and will be in touch within 24 hours.
-              <br /><br />
-              Please check your emails
-            </SuccessMessage>
-            <CloseButton onClick={handleClosePopup}>
-              Got it!
-            </CloseButton>
-          </SuccessPopup>
-        )}
+          {formData.imageChoice === 'upload' && (
+            <>
+              <QuestionGroup>
+                <FileInput 
+                  type="file" 
+                  accept="image/*" 
+                  id="avatarImage" 
+                  onChange={handleImageUpload} 
+                />
+                <FileLabel htmlFor="avatarImage">Choose Image</FileLabel>
+              </QuestionGroup>
+
+              {formData.savedImages.length > 0 && (
+                <SavedImagesGrid>
+                  {formData.savedImages.map((image, index) => (
+                    <SavedImageContainer key={index}>
+                      <img 
+                        src={image.url} 
+                        alt={`Uploaded ${index + 1}`} 
+                      />
+                      <button onClick={() => handleRemoveImage(index)}>×</button>
+                    </SavedImageContainer>
+                  ))}
+                </SavedImagesGrid>
+              )}
+            </>
+          )}
+
+          {formData.imageChoice === 'auto' && (
+            <QuestionGroup>
+              <p style={{ color: 'white', opacity: 0.8 }}>
+                Based on your character description, we'll generate an appropriate avatar for you.
+                You'll have the opportunity to review and adjust it later.
+              </p>
+            </QuestionGroup>
+          )}
+        </StepContent>
+
+        <NavigationButtons>
+          {currentStep > 1 && (
+            <NavButton 
+              type="button" 
+              back 
+              onClick={() => setCurrentStep(prev => prev - 1)}
+            >
+              Back
+            </NavButton>
+          )}
+          {currentStep < totalSteps ? (
+            <NavButton 
+              type="button" 
+              onClick={() => {
+                if (canProceedToNextStep()) {
+                  setCurrentStep(prev => prev + 1);
+                } else {
+                  showValidation('Please complete all required fields');
+                }
+              }}
+            >
+              Next
+            </NavButton>
+          ) : (
+            <SubmitButton type="submit" disabled={formState.submitting}>
+              {formState.submitting ? "Creating..." : "Complete"}
+            </SubmitButton>
+          )}
+        </NavigationButtons>
       </Form>
+      
+      {state.errors && state.errors.length > 0 && (
+        <ErrorMessage>
+          {state.errors.join(", ")}
+        </ErrorMessage>
+      )}
+
+      {formState.errors && formState.errors.length > 0 && (
+        <ErrorMessage>
+          {formState.errors.map(error => error.message).join(", ")}
+        </ErrorMessage>
+      )}
+
+      {(state.succeeded || formState.succeeded) && (
+        <SuccessPopup>
+          <SuccessIcon>✓</SuccessIcon>
+          <SuccessTitle>Thank you for your submission!</SuccessTitle>
+          <SuccessMessage>
+            We've received your character preferences and will be in touch within 24 hours.
+            <br /><br />
+            Please check your emails
+          </SuccessMessage>
+          <CloseButton onClick={handleClosePopup}>
+            Got it!
+          </CloseButton>
+        </SuccessPopup>
+      )}
     </FormContainer>
   );
 }

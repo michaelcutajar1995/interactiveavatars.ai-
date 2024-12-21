@@ -9,6 +9,7 @@ import { useConvaiClient } from '../hooks/useconvaiclient';
 export function ConvaiHolder({ apiKey, characterId, character = 'eman' }) {
   const { client } = useConvaiClient(characterId, apiKey);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isInteracting, setIsInteracting] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -20,8 +21,26 @@ export function ConvaiHolder({ apiKey, characterId, character = 'eman' }) {
   }, []);
 
   return (
-    <div className={`convai-holder ${isMobile ? 'mobile-layout' : 'desktop-layout'}`}>
-      <div className="canvas-container" style={{ position: 'relative' }}>
+    <div 
+      className={`convai-holder ${isMobile ? 'mobile-layout' : 'desktop-layout'}`}
+      style={{ 
+        pointerEvents: isInteracting ? 'none' : 'auto',
+        touchAction: isInteracting ? 'none' : 'auto'
+      }}
+    >
+      <div 
+        className="canvas-container" 
+        style={{ 
+          position: 'relative',
+          pointerEvents: 'none' 
+        }}
+        onMouseDown={() => setIsInteracting(true)}
+        onMouseUp={() => setIsInteracting(false)}
+        onMouseLeave={() => setIsInteracting(false)}
+        onTouchStart={() => setIsInteracting(true)}
+        onTouchEnd={() => setIsInteracting(false)}
+        onTouchCancel={() => setIsInteracting(false)}
+      >
         <KeyboardControls
           map={[
             { name: 'forward', keys: ['ArrowUp', 'w', 'W'] },
@@ -36,8 +55,11 @@ export function ConvaiHolder({ apiKey, characterId, character = 'eman' }) {
           <Canvas
             shadows
             camera={{
-              position: isMobile ? [0, 1.2, 8] : [0, 1.8, 3],
+              position: isMobile ? [0, 1.2, 8] : [0, 1.8, 2],
               fov: isMobile ? 90 : 75,
+            }}
+            style={{ 
+              pointerEvents: isInteracting ? 'auto' : 'none'
             }}
           >
             <Experience client={client} character={character} />

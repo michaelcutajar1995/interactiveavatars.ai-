@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -109,6 +109,12 @@ const PriceTag = styled.div`
   }
 `;
 
+const PricePerInteraction = styled.div`
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 0.5rem;
+`;
+
 const SubscribeButton = styled.button`
   width: 100%;
   padding: 1.2rem;
@@ -151,8 +157,7 @@ function PremiumUpgrade() {
     },
     {
       name: "Business",
-      price: "1,250",
-      pricePerInteraction: "0.42USD",
+      price: "1,249",
       featured: true,
       features: [
         "3000 total interactions",
@@ -170,7 +175,6 @@ function PremiumUpgrade() {
     {
       name: "Pro",
       price: "2,999",
-      pricePerInteraction: "0.33USD",
       features: [
         "5000 total interactions",
         "Business QR code",
@@ -187,8 +191,7 @@ function PremiumUpgrade() {
   ];
 
   const handleSubscribe = async (stripeLink) => {
-    const urlWithEmail = `${stripeLink}?prefilled_email=${encodeURIComponent(user.email)}`;
-    window.location.href = urlWithEmail;
+    window.location.href = stripeLink;
   };
 
   return (
@@ -199,8 +202,21 @@ function PremiumUpgrade() {
           <TierCard key={index} featured={tier.featured}>
             {tier.featured && <TierBadge>Most Popular</TierBadge>}
             <h2>{tier.name}</h2>
+            <PricePerInteraction>
+              {tier.price !== "0" 
+                ? `$${(parseFloat(tier.price.replace(',', '')) / parseInt(tier.features[0].match(/\d+/)[0])).toFixed(2)} per interaction`
+                : ""}
+            </PricePerInteraction>
             <PriceTag>
-              ${tier.price} <span>{tier.price === "0" ? "" : "one-time payment"}</span>
+              ${tier.price} <span>
+                {tier.price === "0" ? "" : (
+                  <>
+                    <small style={{ fontSize: '1em', opacity: 0.8 }}>
+                      (50% before, 50% after delivery)
+                    </small>
+                  </>
+                )}
+              </span>
             </PriceTag>
             <FeatureGrid>
               {tier.features.map((feature, featureIndex) => (

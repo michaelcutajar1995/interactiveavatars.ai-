@@ -59,6 +59,7 @@ const DemoVideoContainer = styled.div`
   max-width: 1300px;
   margin: 0 auto;
   padding: 1rem;
+  
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -862,7 +863,7 @@ function Home() {
         <DemoVideoContainer>
           <LeftSection >
             <MainTitle>
-            We 10x your customer retention with interactive avatars that cost MUCH less than traditional marketing...   </MainTitle>
+            We 10x your brand retention with interactive avatars that cost MUCH less than traditional marketing...   </MainTitle>
             <ButtonGroup>
               <ActionButton className="primary" onClick={() => window.location.href='/contactform'}>
                 Bring your brand to life for free.

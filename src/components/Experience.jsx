@@ -25,7 +25,7 @@ export const Experience = ({ client, character = 'eman' }) => {
         return <Mans client={client} position={[0, 0, 1]} />;
       case 'eman':
       default:
-        return <Eman client={client} position={[0, 0, 1.6]} />;
+        return <Eman client={client} position={[0, 0, 1.5]} />;
     }
   };
 

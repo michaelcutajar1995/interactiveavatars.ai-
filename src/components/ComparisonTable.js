@@ -3,6 +3,7 @@ import styled from 'styled-components';
 const TableContainer = styled.div`
   max-width: 1200px;
   margin: 2rem auto;
+  margin-top: 5rem;
   padding: 0 1rem;
   overflow-x: auto; // Enables horizontal scroll on mobile if needed
   border: 3px solid #FFFFFF;

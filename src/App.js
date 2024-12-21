@@ -24,7 +24,7 @@ import ContactForm from './components/ContactForm';
 import PremiumUpgrade from './pages/PremiumUpgrade';
 import Mans from './pages/Mans';
 import Social from './pages/Social';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider } from './hooks/useAuth';
 
 const AppContainer = styled.div`
   min-height: 100vh;
